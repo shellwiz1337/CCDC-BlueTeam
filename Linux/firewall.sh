@@ -1,6 +1,7 @@
 #!/bin/bash
+# Interactive firewall with separate inbound/outbound controls
 
-# Checking root
+# Check root
 if [[ $EUID -ne 0 ]]; then
   echo "This script must be run as root" >&2
   exit 1
@@ -33,49 +34,76 @@ if [[ $REPLY =~ ^[Yy]$ || -z $REPLY ]]; then
   iptables -A OUTPUT -p icmp --icmp-type echo-reply -j ACCEPT
 fi
 
-# Port configuration function
-configure_ports() {
-  read -p "Enter space-separated $1 $2 ports to allow (both directions): " ports
+# Inbound port configuration
+configure_inbound() {
+  read -p "Enter space-separated $1 $2 ports to allow INBOUND: " ports
   for port in ${ports[@]}; do
     [[ $port =~ ^[0-9]+$ ]] || continue
-    
-    # Inbound rules
     iptables -A INPUT -p $2 --dport $port -j ACCEPT
-    
-    # Outbound rules
-    iptables -A OUTPUT -p $2 --dport $port -j ACCEPT
-    
-    echo "  - Enabled $2 port $port for both inbound and outbound"
+    echo "  - Enabled INBOUND $2 port $port"
   done
 }
 
-# Configure TCP ports
+# Outbound port configuration
+configure_outbound() {
+  read -p "Enter space-separated $1 $2 ports to allow OUTBOUND: " ports
+  for port in ${ports[@]}; do
+    [[ $port =~ ^[0-9]+$ ]] || continue
+    iptables -A OUTPUT -p $2 --dport $port -j ACCEPT
+    echo "  - Enabled OUTBOUND $2 port $port"
+  done
+}
+
+# Configure inbound TCP
 echo
-read -p "Configure TCP ports? (Y/n) " -n 1 -r
+read -p "Configure INBOUND TCP ports? (Y/n) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ || -z $REPLY ]]; then
-  configure_ports "TCP" "tcp"
+  configure_inbound "TCP" "tcp"
 fi
 
-# Configure UDP ports
+# Configure inbound UDP
 echo
-read -p "Configure UDP ports? (Y/n) " -n 1 -r
+read -p "Configure INBOUND UDP ports? (Y/n) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ || -z $REPLY ]]; then
-  configure_ports "UDP" "udp"
+  configure_inbound "UDP" "udp"
 fi
 
-# Special cases
+# Configure outbound TCP
 echo
-read -p "Allow DNS (UDP 53)? (Y/n) " -n 1 -r
+read -p "Configure OUTBOUND TCP ports? (Y/n) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ || -z $REPLY ]]; then
+  configure_outbound "TCP" "tcp"
+fi
+
+# Configure outbound UDP
+echo
+read -p "Configure OUTBOUND UDP ports? (Y/n) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ || -z $REPLY ]]; then
+  configure_outbound "UDP" "udp"
+fi
+
+# Special cases - DNS
+echo
+read -p "Allow INBOUND DNS (UDP 53)? (Y/n) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ || -z $REPLY ]]; then
   iptables -A INPUT -p udp --dport 53 -j ACCEPT
-  iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
-  echo "  - Enabled DNS (UDP 53) for both directions"
+  echo "  - Enabled INBOUND DNS (UDP 53)"
 fi
 
-# Final default DROP rules (executed last)
+echo
+read -p "Allow OUTBOUND DNS (UDP 53)? (Y/n) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ || -z $REPLY ]]; then
+  iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
+  echo "  - Enabled OUTBOUND DNS (UDP 53)"
+fi
+
+# Final default DROP rules
 iptables -P INPUT DROP
 iptables -P OUTPUT DROP
 iptables -P FORWARD DROP
@@ -92,4 +120,8 @@ fi
 echo
 echo "Final firewall configuration:"
 echo "----------------------------"
-iptables -L -v -n
+echo "INBOUND RULES:"
+iptables -L INPUT -v -n
+echo
+echo "OUTBOUND RULES:"
+iptables -L OUTPUT -v -n
