@@ -43,7 +43,10 @@ cat << EOF > /etc/audit/rules.d/security.rules
 -w /etc/cron.allow -p wa -k cron_config
 -w /etc/cron.deny -p wa -k cron_config
 -w /etc/cron.d/ -p wa -k cron_config
--w /etc/cron.*/ -p wa -k cron_config
+-w /etc/cron.daily/ -p wa -k cron_config
+-w /etc/cron.hourly/ -p wa -k cron_config
+-w /etc/cron.monthly/ -p wa -k cron_config
+-w /etc/cron.weekly/ -p wa -k cron_config
 -w /var/spool/cron/ -p wa -k cron_user
 
 ## Identity & Authentication
@@ -66,7 +69,7 @@ cat << EOF > /etc/audit/rules.d/security.rules
 
 #SUID binaries
 
--a always,exit -F arch=b64 -S chmod,fchmod,fchmodat -F a2&04000 -k setuid_mod
+-a always,exit -F arch=b64 -S chmod,fchmod,fchmodat -F a2=04000 -k setuid_mod
 
 # Login Tracking
 -w /var/log/faillog -p wa -k auth_fail
@@ -144,8 +147,8 @@ cat << EOF > /etc/audit/rules.d/security.rules
 -a exit,always -F arch=b64 -S open -F dir=/etc -F success=0 -k unauthedfileaccess 
 -a exit,always -F arch=b64 -S open -F dir=/bin -F success=0 -k unauthedfileaccess 
 -a exit,always -F arch=b64 -S open -F dir=/sbin -F success=0 -k unauthedfileaccess 
--a exit,always -F arch=b64 -S open -F dir=/usr/bin -F success=0 -k -unauthedfileaccess
--a exit,always -F arch=b64 -S open -F dir=/usr/sbin -F success=0 -k -unauthedfileaccess 
+-a exit,always -F arch=b64 -S open -F dir=/usr/bin -F success=0 -k unauthedfileaccess
+-a exit,always -F arch=b64 -S open -F dir=/usr/sbin -F success=0 -k unauthedfileaccess 
 -a exit,always -F arch=b64 -S open -F dir=/var -F success=0 -k unauthedfileaccess 
 -a exit,always -F arch=b64 -S open -F dir=/home -F success=0 -k unauthedfileaccess 
 -a exit,always -F arch=b64 -S open -F dir=/srv -F success=0 -k unauthedfileaccess
