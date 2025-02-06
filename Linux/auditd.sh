@@ -68,8 +68,7 @@ cat << EOF > /etc/audit/rules.d/security.rules
 -w /usr/sbin/adduser -p x -k user_modification
 
 #SUID binaries
-
--a always,exit -F arch=b64 -S chmod,fchmod,fchmodat -F a2=04000 -k setuid_mod
+-a always,exit -F arch=b64 -S chmod,fchmod,fchmodat -F a2=0x4000 -k setuid_mod
 
 # Login Tracking
 -w /var/log/faillog -p wa -k auth_fail
@@ -144,14 +143,14 @@ cat << EOF > /etc/audit/rules.d/security.rules
 -a always,exit -F arch=b64 -S open -F dir=/var/www -F path=.*\.jsp$ -F perm=wa -k webshell_write
 
 ## Capture all failures to access on critical elements 
--a exit,always -F arch=b64 -S open -F dir=/etc -F success=0 -k unauthedfileaccess 
--a exit,always -F arch=b64 -S open -F dir=/bin -F success=0 -k unauthedfileaccess 
--a exit,always -F arch=b64 -S open -F dir=/sbin -F success=0 -k unauthedfileaccess 
--a exit,always -F arch=b64 -S open -F dir=/usr/bin -F success=0 -k unauthedfileaccess
--a exit,always -F arch=b64 -S open -F dir=/usr/sbin -F success=0 -k unauthedfileaccess 
--a exit,always -F arch=b64 -S open -F dir=/var -F success=0 -k unauthedfileaccess 
--a exit,always -F arch=b64 -S open -F dir=/home -F success=0 -k unauthedfileaccess 
--a exit,always -F arch=b64 -S open -F dir=/srv -F success=0 -k unauthedfileaccess
+-a always,exit -F arch=b64 -S open -F dir=/etc -F success=0 -k unauthedfileaccess 
+-a always,exit -F arch=b64 -S open -F dir=/bin -F success=0 -k unauthedfileaccess 
+-a always,exit -F arch=b64 -S open -F dir=/sbin -F success=0 -k unauthedfileaccess 
+-a always,exit -F arch=b64 -S open -F dir=/usr/bin -F success=0 -k unauthedfileaccess
+-a always,exit -F arch=b64 -S open -F dir=/usr/sbin -F success=0 -k unauthedfileaccess 
+-a always,exit -F arch=b64 -S open -F dir=/var -F success=0 -k unauthedfileaccess 
+-a always,exit -F arch=b64 -S open -F dir=/home -F success=0 -k unauthedfileaccess 
+-a always,exit -F arch=b64 -S open -F dir=/srv -F success=0 -k unauthedfileaccess
 
 ## File Deletion
 -a always,exit -F arch=b64 -S unlink -S unlinkat -S rmdir -S rename -S renameat -k file_deletion
