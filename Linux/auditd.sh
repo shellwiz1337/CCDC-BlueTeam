@@ -138,9 +138,6 @@ cat << EOF > /etc/audit/rules.d/security.rules
 -a always,exit -F arch=b64 -S memfd_create -k fileless_mem
 -a always,exit -F arch=b64 -S execveat -F dir=/proc/self/fd -k fileless_exec
 
-# Web shell detection
--a always,exit -F arch=b64 -S open -F dir=/var/www -F path=.*\.php$ -F perm=wa -k webshell_write
--a always,exit -F arch=b64 -S open -F dir=/var/www -F path=.*\.jsp$ -F perm=wa -k webshell_write
 
 ## Capture all failures to access on critical elements 
 -a always,exit -F arch=b64 -S open -F dir=/etc -F success=0 -k unauthedfileaccess 
