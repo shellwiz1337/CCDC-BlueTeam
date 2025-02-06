@@ -1,0 +1,16 @@
+Auditd
+- Continuosly monitoring the log
+tail -f /var/log/audit/audit.log
+
+
+
+
+
+Some config :
+
+max_log_file = 200
+max_log_file_action_DELETE
+num_logs = 3
+
+systemctl restart auditd
+
