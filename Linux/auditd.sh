@@ -141,13 +141,13 @@ cat << EOF > /etc/audit/rules.d/security.rules
 
 ## Capture all failures to access on critical elements 
 -a always,exit -F arch=b64 -S open -F dir=/etc -F success=0 -k unauthedfileaccess 
--a always,exit -F arch=b64 -S open -F dir=/bin -F success=0 -k unauthedfileaccess 
--a always,exit -F arch=b64 -S open -F dir=/sbin -F success=0 -k unauthedfileaccess 
--a always,exit -F arch=b64 -S open -F dir=/usr/bin -F success=0 -k unauthedfileaccess
--a always,exit -F arch=b64 -S open -F dir=/usr/sbin -F success=0 -k unauthedfileaccess 
--a always,exit -F arch=b64 -S open -F dir=/var -F success=0 -k unauthedfileaccess 
--a always,exit -F arch=b64 -S open -F dir=/home -F success=0 -k unauthedfileaccess 
--a always,exit -F arch=b64 -S open -F dir=/srv -F success=0 -k unauthedfileaccess
+#-a always,exit -F arch=b64 -S open -F dir=/bin -F success=0 -k unauthedfileaccess 
+#-a always,exit -F arch=b64 -S open -F dir=/sbin -F success=0 -k unauthedfileaccess 
+#-a always,exit -F arch=b64 -S open -F dir=/usr/bin -F success=0 -k unauthedfileaccess
+#-a always,exit -F arch=b64 -S open -F dir=/usr/sbin -F success=0 -k unauthedfileaccess 
+#-a always,exit -F arch=b64 -S open -F dir=/var -F success=0 -k unauthedfileaccess 
+#-a always,exit -F arch=b64 -S open -F dir=/home -F success=0 -k unauthedfileaccess 
+#-a always,exit -F arch=b64 -S open -F dir=/srv -F success=0 -k unauthedfileaccess
 
 ## File Deletion
 -a always,exit -F arch=b64 -S unlink -S unlinkat -S rmdir -S rename -S renameat -k file_deletion
@@ -159,8 +159,8 @@ cat << EOF > /etc/audit/rules.d/security.rules
 -w /sbin/rmmod -p x -k kernel_mod
 
 # Critical binary protection
--w /bin/ -p x -k bin_exec
--w /usr/bin/ -p x -k bin_exec
+#-w /bin/ -p x -k bin_exec
+#-w /usr/bin/ -p x -k bin_exec
 
 # Configuration file integrity
 -w /etc/ -p wa -k etc_mod
